@@ -1,0 +1,18 @@
+# Roblox files built by Rojo
+*.rbxm
+*.rbxmx
+*.rbxl
+*.rbxlx
+
+# Build metadata which appears in version
+src/version/build-meta.lua
+
+# Roblox place lockfiles
+*.lock
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Visual Studio Code
+*.code-workspace

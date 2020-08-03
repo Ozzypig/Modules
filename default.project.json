@@ -1,0 +1,13 @@
+{
+	"name": "Modules",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"$ignoreUnknownInstances": true,
+			"Modules": {
+				"$path": "src"
+			}
+		}
+	}
+}
