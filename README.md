@@ -55,14 +55,16 @@ On a Debian-based operating system, like Ubuntu, you can perhaps use these shell
 
 ```sh
 $ sudo apt update
-# Install Lua 5.1, LuaRocks and LDoc
+# Install Lua 5.1, LuaRocks, LuaJson and LDoc
 $ sudo apt install lua5.1
 $ sudo apt install luarocks
+$ sudo luarocks install luajson
 $ sudo luarocks install ldoc
 # First install Python 3.7. You may have to add the deadsnakes ppa to do this:
 $ sudo apt install software-properties-common
 $ sudo add-apt-repository ppa:deadsnakes/ppa
 $ sudo apt install python3.7
+$ sudo apt install python3.7-venv
 # Now create the virtual environment, activate it, and install Python dependencies
 $ python3.7 -m venv venv
 $ source venv/bin/activate
