@@ -40,6 +40,11 @@ DOCS_JSON = docs.json
 
 LDOC2MKDOCS = $(PYTHON) -m ldoc2mkdocs
 
+# Utilities
+
+RM = rm
+CP = cp
+
 build : $(OUT_FILE)
 
 $(OUT_FILE) : src
@@ -60,7 +65,8 @@ venv :
 	$(PYTHON) -m venv $(VENV)
 
 docs : clean-docs
-	$(CP) -r $(DOCS_SRC) $(DOCS_BUILD)
+	mkdir $(DOCS_BUILD)
+	$(CP) -r $(DOCS_SRC)/* $(DOCS_BUILD)
 	$(LDOC_LUA) . --config $(LDOC_CONFIG) --filter $(DOCS_FILTER_LUA_MODULE) > $(DOCS_BUILD)/$(DOCS_JSON)
 	$(LDOC2MKDOCS) $(DOCS_BUILD)/$(DOCS_JSON) $(DOCS_BUILD) --pretty
 	$(MKDOCS) build --config-file $(MKDOCS_CONFIG) --clean
