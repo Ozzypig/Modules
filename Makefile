@@ -21,7 +21,7 @@ TEST_FILE = test.rbxlx
 
 # Documentation
 
-LDOC_LUA = ldoc.lua.bat
+LDOC_LUA = ldoc
 LDOC_CONFIG = config.ld
 
 PYTHON = python
