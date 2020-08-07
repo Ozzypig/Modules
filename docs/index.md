@@ -10,7 +10,7 @@ local require = require(game:GetService("ReplicatedStorage"):WaitForChild("Modul
 local MyModule = require("MyNamespace:MyModule")
 ```
 
-_[Visit the Getting Guide to learn the basics &rarr;](getting-started.md)_
+_[Visit the Getting Started guide to learn the basics &rarr;](getting-started.md)_
 
 ## Structure
 
