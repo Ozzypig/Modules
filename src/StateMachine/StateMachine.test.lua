@@ -1,3 +1,6 @@
+--- @module StateMachine.test
+-- Tests for StateMachine class
+
 local StateMachine = require(script.Parent)
 local State = require(script.Parent.State)
 

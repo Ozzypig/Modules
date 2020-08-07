@@ -2,11 +2,11 @@
 
 > Seriously, another dependency loader for Roblox? &ndash;Somebody
 
-**Modules** is a simple dependency loader for the [Roblox engine](https://www.roblox.com). It's a single [ModuleScript](https://developer.roblox.com/en-us/api-reference/class/ModuleScript) named "Modules" which exists in [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage), and it is designed to replace the built-in `require` function.
+_Modules_ is a simple dependency loader for the [Roblox engine](https://www.roblox.com). It's a single [ModuleScript](https://developer.roblox.com/en-us/api-reference/class/ModuleScript) named "Modules" which exists in [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage), and it is designed to replace the built-in `require` function.
 
 ## Usage
 
-Replace `require` with the value returned by the "Modules" (the root ModuleScript). It behaves exactly the same way it did before, but in addition to typical arguments types, you allow you to provide strings:
+Replace `require` with the value returned by the "Modules" (the root ModuleScript). It behaves exactly the same way it did before, but in addition to typical arguments types, you can provide strings:
 
 ```lua
 local require = require(game:GetService("ReplicatedStorage"):WaitForChild("Modules"))
@@ -16,10 +16,6 @@ local AnotherClass = require("MyLibrary:Something.AnotherClass")
 ```
 
 The ModuleLoader looks for a **namespace** [Folder](https://developer.roblox.com/en-us/api-reference/class/Folder) named "MyLibrary" in either [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage) or [ServerScriptService](https://developer.roblox.com/en-us/api-reference/class/ServerScriptService) (if on the server) which contains a ModuleScript named "MyClass".
-
-The second call to require does something similar, although it looks for any object called "Something", followed by a ModuleScript called "AnotherClass". It is similar to indexing a child in a Roblox object using the dot operator (eg `workspace.Part`).
-
-Both ReplicatedStorage and ServerScriptService may contain namespace folders of the same name to separate shared modules and server-only modules. A namespace folder within ServerScriptService may also contain a "Replicated" folder, which will automatically be replicated to the client as if it were in ReplicatedStorage.
 
 ## Some Batteries Included
 
@@ -31,30 +27,63 @@ There's a few patterns that are used pretty often in Roblox projects, so they're
 - `StateMachine`: a simple implementation of a state machine pattern, event-based or subclass based
 	- `StateMachine.State`: a single state in a StateMachine
 
-## Testing
+## Development of _Modules_
 
-The [Makefile](Makefile) contains a `test` target. It uses Rojo to build a Roblox place file (test.rblx) that runs all tests.
+This section is for development of _Modules_ itself, not using it to make your own stuff. To learn how to do that, check out the documentation site. The rest of this readme will only pertain to developing _Modules_.
 
-```bash
+  * To **build** and **test** this project, you need [Rojo 0.5.x](https://github.com/Roblox/rojo) and ideally [GNU Make](https://www.gnu.org/software/make/).
+
+### Building
+
+The [Makefile](Makefile) contains a `build` target, which creates the file Modules.rbxlx.
+
+```sh
+# Build Modules.rbxlx
+$ make build
+# In a new place in Roblox Studio, insert this Model into ReplicatedStorage.
+# Start syncing build resources using Rojo
+$ rojo serve default.project.json
+```
+
+Using [build.project.json](build.project.json), invoke Rojo to build `Modules.rbxmx`, a Roblox model file containing only the root ModuleScript (Modules). After it is built and inserted into a Roblox place, you can use the [default.project.json](default.project.json) Rojo project file to sync changes into the already-installed instance.
+
+### Documentation
+
+To build the for this project, you need [Lua 5.1](https://lua.org) and LDoc; [Python 3.7](https://www.python.org/) and the libraries in [requirements-docs.txt](requirements-docs.txt), which are easily installed using [pip](https://pip.pypa.io/en/stable/).
+
+On a Debian-based operating system, like Ubuntu, you can perhaps use these shell commands to install all the required dependencies for the docs:
+
+```sh
+$ sudo apt update
+# Install Lua 5.1, LuaRocks and LDoc
+$ sudo apt install lua5.1
+$ sudo apt install luarocks
+$ sudo luarocks install ldoc
+# First install Python 3.7. You may have to add the deadsnakes ppa to do this:
+$ sudo apt install software-properties-common
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt install python3.7
+# Now create the virtual environment, activate it, and install Python dependencies
+$ python3.7 -m venv venv
+$ source venv/bin/activate
+$ pip install -r requirements-docs.txt
+```
+
+The source for _Modules_ documentation exists right in its [source code](src/) using doc comments, as well as the [docs](docs/) directory. To prepare this for the web, a somewhat roundabout process is taken to building the static web content. The [Makefile](Makefile) contains a `docs` target, which will do the following:
+
+* Using [LDoc](https://github.com/stevedonovan/LDoc) (Lua 5.1), doc comment data is exported in a raw JSON format. The [docs.lua](docs.lua) script helps with this process by providing a filter function.
+* The [ldoc2mkdoc](ldoc2mkdoc/) Python module in this repostory converts the raw JSON to Markdown using the [Jinja2](https://palletsprojects.com/p/jinja/) template engine.
+* This Markdown is then passed to [MkDocs](https://www.mkdocs.org/) to build the static website source (HTML).
+
+### Testing
+
+The [Makefile](Makefile) contains a `test` target. It invokes [Rojo 0.5.x](https://github.com/Roblox/rojo) with the [test.project.json](test.project.json) file to build a Roblox place file, test.rbxlx, that runs all tests in Roblox Studio.
+
+```sh
 # Build test.rbxlx
 $ make test
 # Start syncing test resources using Rojo
 $ rojo serve test.project.json
 ```
 
-Tests are included in ".test" modules as children of the module they contain tests for, such as [Modules.test](src/Modules.test/init.lua), except for client tests which are in [ClientTests/Modules.test.lua](test/StarterPlayer/StarterPlayerScripts/ClientTests/Modules.test.lua)
-
-Tests are run using the [TestRunner](test/ReplicatedStorage/TestRunner.lua), which invoked by[RunTests.server.lua](test/ServerScriptService/ModulesTest/RunTests.server.lua) in "ModuleTests" in ServerScriptService, which gathers tests from every ModuleScripts whose name ends with ".test". For client tests, they are invoked by [RunTests.client.lua](test/StarterPlayer/StarterPlayerScripts/RunTests.client.lua), in [StarterPlayerScripts](https://developer.roblox.com/en-us/api-reference/class/StarterPlayerScripts).
-
-## Building
-
-The [Makefile](Makefile) contains a `build` target.
-
-```bash
-# Build Modules.rbxlx
-$ make build
-# Start syncing build resources using Rojo
-$ rojo serve default.project.json
-```
-
-Using [build.project.json](build.project.json), invoke Rojo to build `Modules.rbxmx`, which is a Roblox model file containing only the root ModuleScript (Modules).
+Tests are included in ".test" modules as children of the module they contain tests for. Tests are run using the [TestRunner](test/ReplicatedStorage/TestRunner.lua), which is invoked by [RunTests.server.lua](test/ServerScriptService/ModulesTest/RunTests.server.lua) in "ModuleTests" in ServerScriptService. The TestRunner gathers tests from every ModuleScript whose name ends with ".test". Client tests are run by [RunTests.client.lua](test/StarterPlayer/StarterPlayerScripts/RunTests.client.lua), in [StarterPlayerScripts](https://developer.roblox.com/en-us/api-reference/class/StarterPlayerScripts).

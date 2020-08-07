@@ -1,4 +1,5 @@
--- Symantic Versioning 2.0.0 - https://semver.org/
+--- @module version.test
+-- Tests for version module
 
 local VERSION = {
 	SOFTWARE_NAME = "Modules";

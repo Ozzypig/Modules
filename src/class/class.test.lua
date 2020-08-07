@@ -1,5 +1,7 @@
-local class = require(script.Parent)
+--- Tests for class module
+--@module class.test
 
+local class = require(script.Parent)
 
 -- A simple, idiomatic Lua class
 local MyClass = {}

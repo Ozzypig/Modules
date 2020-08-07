@@ -1,3 +1,6 @@
+--- @module Modules.test
+-- Tests for ModuleLoader module
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 

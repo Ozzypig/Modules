@@ -1,0 +1,26 @@
+h1 {
+	list-style: square;
+	display: list-item;
+}
+
+h2 {
+	border-bottom: solid 2px rgba(0,0,0,.1);
+}
+
+h3 {
+	list-style: circle;
+	display: list-item;
+}
+
+h4 {
+	padding-left: 2em;
+}
+
+h5 {
+	padding-left: 2em;
+}
+
+h6 {
+	padding-left: 2em;
+}
+

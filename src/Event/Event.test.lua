@@ -1,3 +1,6 @@
+--- @module Event.test
+-- Tests for Event class
+
 local Event = require(script.Parent)
 
 local EventTests = {}

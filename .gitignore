@@ -16,3 +16,8 @@ src/version/build-meta.lua
 
 # Visual Studio Code
 *.code-workspace
+
+# Built documentation site
+docs-build/*
+venv/*
+site/*

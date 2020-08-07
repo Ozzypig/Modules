@@ -1,3 +1,6 @@
+--- @module version
+-- Describes the current version of Modules
+
 local version = require(script.Parent)
 
 local versionTests = {}

@@ -1,3 +1,6 @@
+--- @module Maid.test
+-- Tests for Maid class
+
 local Maid = require(script.Parent)
 
 local MaidTests = {}

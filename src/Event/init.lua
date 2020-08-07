@@ -1,8 +1,10 @@
---- Lua-side duplication of the API of events on Roblox objects.
--- Events are needed for to ensure that for local events objects are passed by
--- reference rather than by value where possible, as the BindableEvent objects
--- always pass Event arguments by value, meaning tables will be deep copied.
--- Roblox's deep copy method parses to a non-lua table compatable format.
+--- Implementation of Roblox's event API using a BindableEvent.
+-- Event re-implements Roblox's event API (connect, fire, wait) using a BindableEvent,
+-- but without restrictions. The exact same values passed to @{Event:fire|fire} are
+-- sent to @{Event:connect|connected} functions and returned by @{Event:wait|wait},
+-- rather than copies, including tables with metatables.
+--
+-- This class is based on Signal in Nevermore by Quenty.
 -- @classmod Event
 
 local Event = {}
@@ -10,7 +12,8 @@ Event.__index = Event
 Event.ClassName = "Event"
 
 --- Constructs a new Event.
--- @constructor Event.new()
+-- @staticfunction Event.new
+-- @constructor
 -- @treturn Event
 function Event.new()
 	local self = setmetatable({}, Event)
@@ -22,21 +25,9 @@ function Event.new()
 	return self
 end
 
---- Fire the event with the given arguments. All handlers will be invoked. Handlers follow
--- Roblox Event conventions.
--- @param ... Variable arguments to pass to handler
--- @treturn nil
-function Event:fire(...)
-	self._argData = {...}
-	self._argCount = select("#", ...)
-	self._bindableEvent:Fire()
-	self._argData = nil
-	self._argCount = nil
-end
-
---- Connect a new handler to the event. Returns a connection object that can be disconnected.
+--- Connect a new handler function to the event. Returns a connection object that can be disconnected.
 -- @tparam function handler Function handler called with arguments passed when `:Fire(...)` is called
--- @treturn Connection Connection object that can be disconnected
+-- @treturn rbx:datatype/RBXScriptConnection Connection object that can be disconnected
 function Event:connect(handler)
 	if not (type(handler) == "function") then
 		error(("connect(%s)"):format(typeof(handler)), 2)
@@ -47,7 +38,7 @@ function Event:connect(handler)
 	end)
 end
 
---- Wait for fire to be called, and return the arguments it was given.
+--- Wait for @{Event:fire|fire} to be called, then return the arguments it was given.
 -- @treturn ... Variable arguments from connection
 function Event:wait()
 	self._bindableEvent.Event:Wait()
@@ -55,8 +46,18 @@ function Event:wait()
 	return unpack(self._argData, 1, self._argCount)
 end
 
+--- Fire the event with the given arguments. All handlers will be invoked. Handlers follow
+-- Roblox Event conventions.
+-- @param ... Variable arguments to pass to handler
+function Event:fire(...)
+	self._argData = {...}
+	self._argCount = select("#", ...)
+	self._bindableEvent:Fire()
+	self._argData = nil
+	self._argCount = nil
+end
+
 --- Disconnects all connected events to the Event. Voids the Event as unusable.
--- @treturn nil
 function Event:cleanup()
 	if self._bindableEvent then
 		self._bindableEvent:Destroy()

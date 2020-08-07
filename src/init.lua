@@ -1,6 +1,14 @@
---- Modules: ModuleLoader
---@module ModuleLoader
---@usage local require = require(game:GetService("ReplicatedStorage"):WaitForChild("Modules"))
+--- The main ModuleLoader, designed to replace the built-in require function.
+-- ModuleLoader is the main object returned by the "Modules" ModuleScript. It is designed to 
+-- replace the built-in `require` function, retaining all its normal behaviors while also adding
+-- more:
+--
+--   * Call with a string, eg `require("Namespace:ModuleName")`, to require a Module in a Namespace
+--   * Call `require.server` to skip requires if on the client (get nil instead)
+--   * Call `require.client` to skip requires if on the server (get nil instead)
+--
+-- @usage local require = require(game:GetService("ReplicatedStorage"):WaitForChild("Modules"))
+-- @module ModuleLoader
 
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -72,6 +80,9 @@ local function splitNames(str)
 	return t
 end
 
+--- Prints only if `DEBUG_MODE` is true.
+-- @function ModuleLoader:_print
+-- @local
 function ModuleLoader:_print(...)
 	if ModuleLoader.DEBUG_MODE then
 		print(...)
@@ -79,6 +90,7 @@ function ModuleLoader:_print(...)
 end
 
 --- Finds a module given its fully-qualified name
+-- @private
 function ModuleLoader:_findModule(fqName)
 	assert(type(fqName) == "string")
 	
@@ -128,6 +140,9 @@ function ModuleLoader:_findModule(fqName)
 end
 
 ModuleLoader.SAFE_REQUIRE_WARN_TIMEOUT = .5
+
+--- A wrapper for require which causes a warning if the module is taking too long to load.
+-- @private
 function ModuleLoader:_safe_require(mod, requiring_mod)
 	local startTime = os.clock()
 	local conn
@@ -162,13 +177,17 @@ end
 
 --- When called by a function that replaces `require`, this function returns the LuaSourceContainer
 -- which called `require`.
---@local
+--@private
 function ModuleLoader:_getRequiringScript()
 	return getfenv(3).script
 end
 
--- Basic memoization pattern
+--- Basic memoization pattern
+-- @private
 ModuleLoader._cache = {}
+
+--- Main logic of all flavors of require calls.
+-- @private
 function ModuleLoader:_require(object, requiring_script)
 	if not requiring_script then
 		requiring_script = ModuleLoader:_getRequiringScript()
@@ -208,16 +227,21 @@ function ModuleLoader:_require(object, requiring_script)
 	ModuleLoader._cache[object] = retval
 	return retval
 end
-ModuleLoader.__call = function (self, object)
-	local script = self:_getRequiringScript()
-	return self:_require(object, script)
-end
 
+--- The main `require` overload.
+-- @param object An object normally passed to require OR a string
 function ModuleLoader.require(object)
 	local script = ModuleLoader:_getRequiringScript()
 	return ModuleLoader:_require(object, script)
 end
 
+--- Alias for calling @{ModuleLoader.require}, useful when using ModuleLoader as a `require` replacement.
+function ModuleLoader:__call(object)
+	local script = self:_getRequiringScript()
+	return self:_require(object, script)
+end
+
+--- Like @{ModuleLoader.require|require}, but returns nil if not ran on the server.
 function ModuleLoader.server(object)
 	local requiringScript = ModuleLoader:_getRequiringScript()
 	if isServer then
@@ -227,6 +251,7 @@ function ModuleLoader.server(object)
 	end
 end
 
+--- Like @{ModuleLoader.require|require}, but returns nil if not ran on a client.
 function ModuleLoader.client(object)
 	local requiringScript = ModuleLoader:_getRequiringScript()
 	if isClient then
@@ -236,6 +261,9 @@ function ModuleLoader.client(object)
 	end
 end
 
+--- Copies "Replicated" folders in ServerScriptService modules to ReplicatedStorage, renaming them.
+-- Also signals that all libraries have been replicated.
+-- @private
 function ModuleLoader._replicateLibraries()
 	-- Search for modules with "-Replicated" at the end and replicate them
 	-- Alternatively, child folder named "Replicated" is moved and renamed
@@ -255,17 +283,22 @@ function ModuleLoader._replicateLibraries()
 end
 
 ModuleLoader.ALL_LIBRARIES_REPLICATED = "AllLibrariesReplicated"
+--- Signals to clients that all libraries have been replicated by creating a foldr in ReplicatedStorage.
+-- @private
 function ModuleLoader._signalAllLibrariesReplicated()
 	local allLibrariesReplicatedTag = Instance.new("Folder")
 	allLibrariesReplicatedTag.Name = ModuleLoader.ALL_LIBRARIES_REPLICATED
 	allLibrariesReplicatedTag.Parent = ReplicatedStorage
 end
 
+--- Waits for the server to signal that all libraries have been replicated.
+-- @private
 function ModuleLoader._waitForLibrariesToReplicate()
 	ReplicatedStorage:WaitForChild(ModuleLoader.ALL_LIBRARIES_REPLICATED)
 end
 
-
+--- Returns the version of the ModuleLoader being used
+-- @function ModuleLoader:__tostring
 function ModuleLoader:__tostring()
 	return ("<ModuleLoader %s>"):format(self.VERSION)
 end

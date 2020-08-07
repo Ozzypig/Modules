@@ -1,5 +1,5 @@
---- Utility for working with idiomatic Lua object-oriented patterns
--- @module class
+--- @module class
+-- Utility for working with idiomatic Lua object-oriented patterns
 
 local class = {}
 
@@ -9,6 +9,7 @@ function class.classOf(object)
 end
 
 --- Given an `object` and a `class`, return if that object is an instance of another class/superclass
+-- Equivalent to @{class.extends}(@{class.classOf}(object), `cls`)
 function class.instanceOf(object, cls)
 	return class.extends(class.classOf(object), cls)
 end
