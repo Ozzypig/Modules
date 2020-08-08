@@ -14,9 +14,19 @@ local MyModule = require("MyNamespace:MyModule")
 
 _[Visit the Getting Started guide to learn the basics &rarr;](getting-started.md)_
 
+## Download & Install
+
+There's several ways you can get it:
+
+* _[Take the Model from Roblox.com &rarr;](https://www.roblox.com/library/5517888456/Modules-v1-0-0)_
+* _[Download from the GitHub releases page &rarr;](https://github.com/Ozzypig/Modules/releases/)_
+* Advanced: build _Modules_ from source using [Rojo 0.5.x](https://github.com/Roblox/rojo)
+
+Once available, insert the Model into your Roblox place, then move the root "Modules" ModuleScript into ReplicatedStorage.
+
 ## Structure
 
-_Modules_ also includes some super common patterns as including ModuleScripts. Check out the structure here:
+_Modules_ also includes some super common patterns as included ModuleScripts. Check out the structure here:
 
 <pre><code class="nohighlight">&boxur; ReplicatedStorage
   &boxur; <a href="api/ModuleLoader">Modules</a>           &larr; This is the <strong>root</strong> ModuleScript

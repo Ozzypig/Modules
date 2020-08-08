@@ -4,12 +4,14 @@ _Modules_ is designed to be simple and straightforward.
 
 ## 1. Install _Modules_
 
-Put the provided "Modules" ModuleScript in ReplicatedStorage.
+After inserting _Modules_ into your game, move the root "Modules" ModuleScript to ReplicatedStorage.
 
 <pre><code class="nohighlight">game
 &boxur; ReplicatedStorage
   &boxur; Modules
 </code></pre>
+
+Anywhere in ReplicatedStorage will work, but it's recommended to be a direct child.
 
 ## 2. Create Your Namespace
 

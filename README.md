@@ -6,6 +6,16 @@
 
 _Modules_ is a simple dependency loader for the [Roblox engine](https://www.roblox.com). It's a single [ModuleScript](https://developer.roblox.com/en-us/api-reference/class/ModuleScript) named "Modules" which exists in [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage), and it is designed to replace the built-in `require` function.
 
+## Download & Install
+
+There's several ways you can get it:
+
+* _[Take the Model from Roblox.com &rarr;](https://www.roblox.com/library/5517888456/Modules-v1-0-0)_
+* _[Download from the GitHub releases page &rarr;](https://github.com/Ozzypig/Modules/releases/)_
+* Advanced: build _Modules_ from source using [Rojo 0.5.x](https://github.com/Roblox/rojo)
+
+Once available, insert the Model into your Roblox place, then move the root "Modules" ModuleScript into ReplicatedStorage.
+
 ## Usage
 
 Replace `require` with the value returned by the "Modules" (the root ModuleScript). It behaves exactly the same way it did before, but in addition to typical arguments types, you can provide strings:
@@ -51,9 +61,9 @@ Using [build.project.json](build.project.json), invoke Rojo to build `Modules.rb
 
 ### Documentation
 
-To build the for this project, you need [Lua 5.1](https://lua.org) and LDoc; [Python 3.7](https://www.python.org/) and the libraries in [requirements-docs.txt](requirements-docs.txt), which are easily installed using [pip](https://pip.pypa.io/en/stable/).
+To build the documentation for this project, you need [Lua 5.1](https://lua.org) and [LDoc](https://github.com/stevedonovan/LDoc) (both of these available in [Lua for Windows](https://github.com/rjpcomputing/luaforwindows)); additionally [Python 3.7](https://www.python.org/) and the libraries in [requirements-docs.txt](requirements-docs.txt), which can be installed easily using [pip](https://pip.pypa.io/en/stable/).
 
-On a Debian-based operating system, like Ubuntu, you can perhaps use these shell commands to install all the required dependencies for the docs:
+On a Debian-based operating system, like Ubuntu, you can perhaps use these shell commands to install all the required dependencies:
 
 ```sh
 $ sudo apt update
@@ -71,6 +81,9 @@ $ sudo apt install python3.7-venv
 $ python3.7 -m venv venv
 $ source venv/bin/activate
 $ pip install -r requirements-docs.txt
+# At this point you're good to go!
+$ make docs
+# Static HTML becomes available in site/
 ```
 
 The source for _Modules_ documentation exists right in its [source code](src/) using doc comments, as well as the [docs](docs/) directory. To prepare this for the web, a somewhat roundabout process is taken to building the static web content. The [Makefile](Makefile) contains a `docs` target, which will do the following:
