@@ -1,10 +1,50 @@
---- Implementation of Roblox's event API using a BindableEvent.
--- Event re-implements Roblox's event API (connect, fire, wait) using a BindableEvent,
--- but without restrictions. The exact same values passed to @{Event:fire|fire} are
--- sent to @{Event:connect|connected} functions and returned by @{Event:wait|wait},
--- rather than copies, including tables with metatables.
---
--- This class is based on Signal in Nevermore by Quenty.
+--[[-- Implementation of Roblox's event API using a @{rbx:class/BindableEvent|BindableEvent}.
+Event re-implements Roblox's event API (connect, fire, wait) by wrapping a
+@{rbx:class/BindableEvent|BindableEvent}.
+
+This Event implementation is based on the [Signal from Nevermore Engine by
+Quenty](https://github.com/Quenty/NevermoreEngine/blob/version2/Modules/Shared/Events/Signal.lua).
+
+#### Why?
+
+This implementation does not suffer from the restrictions normally introduced by using
+a BindableEvent. When firing a BindableEvent, the Roblox engine makes a copy of the values
+passed to @{rbx:function/BindableEvent/Fire|BindableEvent:Fire}. On the other hand, this class
+temporarily stores the values passed to @{Event:fire|fire}, fires the wrapped BindableEvent
+without arguments. The values are then retrieved and passed appropriately.
+
+This means that the _exact_ same values passed to @{Event:fire|fire} are
+sent to @{Event:connect|connected} handler functions and also returned by @{Event:wait|wait},
+rather than copies. This includes tables with metatables, and other values that are normally
+not serializable by Roblox.
+
+#### Usage
+```lua
+local zoneCapturedEvent = Event.new()
+
+-- Hook up a handler function using connect
+local function onZoneCaptured(teamName)
+	print("The zone was captured by: " .. teamName)
+end
+zoneCapturedEvent:connect(onZoneCaptured)
+
+-- Or use wait, if you like that sort of thing
+local teamName
+while true do
+	teamName = zoneCapturedEvent:wait()
+	print("The zone was captured by: " .. teamName)
+end
+
+-- Trigger the event using fire
+zoneCapturedEvent:fire("Blue team")
+zoneCapturedEvent:fire("Red team")
+
+-- Remember to call cleanup then forget about the event when
+-- it is no longer needed!
+zoneCapturedEvent:cleanup()
+zoneCapturedEvent = nil
+```
+]]
 -- @classmod Event
 
 local Event = {}

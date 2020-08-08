@@ -1,16 +1,41 @@
---- Utility object for cleaning up, destroying and otherwising releasing resources.
--- A **Maid** is provided tasks which it will handle when it is told to @{Maid:cleanup|cleanup}.
--- A task may be a function, connection, Roblox Instance, or table with a `cleanup` function.
--- Connections are always disconnected before other tasks.
---
--- This Maid implementation is based on the Maid from Nevermore engine by Quenty
+--[[- Utility object for cleaning up, destroying and otherwising releasing resources.
+A **Maid** is provided tasks which it will handle when it is told to @{Maid:cleanup|cleanup}.
+A task may be a function, connection, Roblox Instance, or table with a `cleanup` function.
+Connections are always disconnected before other tasks.
+
+This Maid implementation is based on the
+[Maid from Nevermore Engine by Quenty](https://github.com/Quenty/NevermoreEngine/blob/version2/Modules/Shared/Events/Maid.lua).
+
+#### Usage
+
+```lua
+local maid = Maid.new()
+
+-- Something you might need to clean up:
+local part = workspace.SomePart
+
+-- Add tasks to the maid. A task can be...
+maid:addTask(part)                      -- a Roblox instance
+maid:addTask(part.Touched:Connect(...)) -- a connection
+maid:addTask(function() ... end)        -- a function
+maid:addTask(Event.new())               -- something with a cleanup function
+
+-- You can add tasks by id:
+maid["somePart"] = Instance.new("Part") -- "somePart" is a task id
+maid["somePart"] = Instance.new("Part") -- the first part gets cleaned up
+                                        -- because "somePart" got overwritten!
+
+-- Instruct the maid to perform all tasks:
+maid:cleanup()
+```
+]]
 -- @classmod Maid
 
 local Maid = {}
 --Maid.__index = Maid
 
 --- Constructs a new Maid.
--- @constructor Maid.new
+-- @constructor
 -- @treturn Maid
 function Maid.new()
 	local self = setmetatable({
