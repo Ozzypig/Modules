@@ -1,10 +1,12 @@
 # Modules
 
-<img align="right" src="docs/Markdown-black.png">
+<img align="right" src="docs/Modules-black.png">
 
 > Seriously, another dependency loader for Roblox? &ndash;Somebody
 
 _Modules_ is a simple dependency loader for the [Roblox engine](https://www.roblox.com). It's a single [ModuleScript](https://developer.roblox.com/en-us/api-reference/class/ModuleScript) named "Modules" which exists in [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage), and it is designed to replace the built-in `require` function.
+
+_[Click here to visit the documentation site for Modules &rarr;](https://modules.ozzypig.com)_
 
 ## Download & Install
 
@@ -15,6 +17,8 @@ There's several ways you can get it:
 * Advanced: build _Modules_ from source using [Rojo 0.5.x](https://github.com/Roblox/rojo)
 
 Once available, insert the Model into your Roblox place, then move the root "Modules" ModuleScript into ReplicatedStorage.
+
+_[All ready for blast-off? Check out the Getting Started guide &rarr;](https://modules.ozzypig.com/getting-started/)_
 
 ## Usage
 
@@ -29,15 +33,19 @@ local AnotherClass = require("MyLibrary:Something.AnotherClass")
 
 The ModuleLoader looks for a **namespace** [Folder](https://developer.roblox.com/en-us/api-reference/class/Folder) named "MyLibrary" in either [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage) or [ServerScriptService](https://developer.roblox.com/en-us/api-reference/class/ServerScriptService) (if on the server) which contains a ModuleScript named "MyClass".
 
-## Some Batteries Included
+## Some Goodies Included
 
-There's a few patterns that are used pretty often in Roblox projects, so they're included as modules. They may be required by not specifying a namespace, eg `require("Event")`. The included modules are:
+There's a few patterns that incredibly useful in most Roblox projects, so they're included as modules. They may be required by not specifying a namespace, eg `require("Event")`. The included modules are:
 
 - `class`: provides utility functions for working with idomatic Lua classes
 - `Event`: class similar to Roblox's built-in [RBXScriptSignal](https://developer.roblox.com/en-us/api-reference/datatype/RBXScriptSignal), it allows any kind of data and has `connect`, `fire`, `wait` methods
 - `Maid`: class for deconstructing/deallocating objects; call `addTask` with a connection, function, Instance or other Maid to be disconnected, called or [destroyed](https://developer.roblox.com/en-us/api-reference/function/Instance/Destroy) when `cleanup` is called
 - `StateMachine`: a simple implementation of a state machine pattern, event-based or subclass based
-	- `StateMachine.State`: a single state in a StateMachine
+	- `State`: a single state in a StateMachine
+
+Each of these modules are documented in-code using [LDoc](https://github.com/stevedonovan/LDoc), which also appears on the [documentation site](https://modules.ozzypig.com/).
+
+---
 
 ## Development of _Modules_
 
