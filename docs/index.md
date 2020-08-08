@@ -1,5 +1,7 @@
 # Modules
 
+<img src="Modules-black.png" style="float:right;padding:1.25em;" alt="Modules logo">
+
 > Seriously, another dependency loader for Roblox? &ndash;Somebody, probably
 
 _Modules_ is a simple dependency loader for the [Roblox engine](https://www.roblox.com). It's a single [ModuleScript](https://developer.roblox.com/en-us/api-reference/class/ModuleScript) named "Modules" which exists in [ReplicatedStorage](https://developer.roblox.com/en-us/api-reference/class/ReplicatedStorage), and it is designed to replace the built-in `require` function.

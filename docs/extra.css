@@ -24,3 +24,11 @@ h6 {
 	padding-left: 2em;
 }
 
+pre, code, kbd {
+	font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+@font-face {
+	font-family: "JetBrains Mono";
+	src: "font/JetBrainsMono.woff";
+}

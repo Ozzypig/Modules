@@ -2,27 +2,40 @@ site_name: Modules Documentation
 repo_name: Ozzypig/Modules
 repo_url: https://github.com/Ozzypig/Modules
 
-theme:
-  name: material #readthedocs
-  palette:
-    priamry: 'Red'
-    accent: 'Red'
-
 nav:
   - Overview: index.md
   - Getting Started: getting-started.md
-  - Modules:
-    - 'ModuleLoader': api/ModuleLoader.md
-    - 'class': api/class.md
-  - Classes:
-    - 'Maid': api/Maid.md
-    - 'Event': api/Event.md
-    - 'StateMachine': api/StateMachine.md
-    - 'State': api/State.md
+  - API:
+    - Modules:
+      - 'ModuleLoader': api/ModuleLoader.md
+      - 'class': api/class.md
+    - Classes:
+      - 'Maid': api/Maid.md
+      - 'Event': api/Event.md
+      - 'StateMachine': api/StateMachine.md
+      - 'State': api/State.md
 
 docs_dir: docs-build
 
-extra_css: [extra.css]
+theme:
+  name: material #readthedocs
+  favicon: Modules-32.png
+  logo: Modules-256.png
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    primary: deep orange
+    accent: amber
+
+extra_css:
+  - extra.css
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js
+  - javascripts/config.js
+
+edit_uri: ""
 
 markdown_extensions:
-  - toc
+  - codehilite

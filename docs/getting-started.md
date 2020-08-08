@@ -1,5 +1,3 @@
-[TOC]
-
 # Getting Started
 
 _Modules_ is designed to be simple and straightforward.
