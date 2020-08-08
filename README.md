@@ -89,3 +89,7 @@ $ rojo serve test.project.json
 ```
 
 Tests are included in ".test" modules as children of the module they contain tests for. Tests are run using the [TestRunner](test/ReplicatedStorage/TestRunner.lua), which is invoked by [RunTests.server.lua](test/ServerScriptService/ModulesTest/RunTests.server.lua) in "ModuleTests" in ServerScriptService. The TestRunner gathers tests from every ModuleScript whose name ends with ".test". Client tests are run by [RunTests.client.lua](test/StarterPlayer/StarterPlayerScripts/RunTests.client.lua), in [StarterPlayerScripts](https://developer.roblox.com/en-us/api-reference/class/StarterPlayerScripts).
+
+## License
+
+_Modules_ is released under the MIT License, which you can read the complete text in [LICENSE.txt](LICENSE.txt). This means you can use this for commercial purposes, distribute it freely, modify it, and use it privately.
