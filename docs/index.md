@@ -18,7 +18,7 @@ _[Visit the Getting Started guide to learn the basics &rarr;](getting-started.md
 
 There's several ways you can get it:
 
-* _[Take the Model from Roblox.com &rarr;](https://www.roblox.com/library/5517888456/Modules-v1-0-0)_
+* _[Take the Model from Roblox.com &rarr;](https://www.roblox.com/library/5618924671/Modules-v1-1-0)_
 * _[Download from the GitHub releases page &rarr;](https://github.com/Ozzypig/Modules/releases/)_
 * Advanced: build _Modules_ from source using [Rojo 0.5.x](https://github.com/Roblox/rojo)
 
