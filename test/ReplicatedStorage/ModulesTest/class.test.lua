@@ -1,7 +1,10 @@
 --- Tests for class module
 --@module class.test
 
-local class = require(script.Parent)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local class = require(Modules:WaitForChild("class"))
 
 -- A simple, idiomatic Lua class
 local MyClass = {}

@@ -3,9 +3,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
 
-local modulesScript = script.Parent
-local ModuleLoader = require(modulesScript)
+local ModuleLoader = require(Modules)
 
 local ModuleLoaderTests = {}
 

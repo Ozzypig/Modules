@@ -1,8 +1,10 @@
 --- @module StateMachine.test
 -- Tests for StateMachine class
 
-local StateMachine = require(script.Parent)
-local State = require(script.Parent.State)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local StateMachine = require(Modules:WaitForChild("StateMachine"))
+local State = require(Modules.StateMachine:WaitForChild("State"))
 
 local StateMachineTests = {}
 

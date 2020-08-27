@@ -1,7 +1,9 @@
 --- @module version
 -- Describes the current version of Modules
 
-local version = require(script.Parent)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local version = require(Modules:WaitForChild("version"))
 
 local versionTests = {}
 

@@ -1,7 +1,9 @@
 --- @module Event.test
 -- Tests for Event class
 
-local Event = require(script.Parent)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local Event = require(Modules:WaitForChild("Event"))
 
 local EventTests = {}
 

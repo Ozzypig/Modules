@@ -1,7 +1,9 @@
 --- @module Maid.test
 -- Tests for Maid class
 
-local Maid = require(script.Parent)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local Maid = require(Modules:WaitForChild("Maid"))
 
 local MaidTests = {}
 

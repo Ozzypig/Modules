@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local TestRunner = require(ReplicatedStorage:WaitForChild("TestRunner"))
 
-local testContainer = ReplicatedStorage:WaitForChild("Modules")
+local testContainer = ReplicatedStorage:WaitForChild("ModulesTest")
 
 local function main()
 	local testRunner = TestRunner.gather(testContainer)
