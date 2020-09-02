@@ -194,7 +194,7 @@ function StateMachine:_stateArg(stateOrId)
 		state = self:hasState(stateOrId)
 		    and self:getState(stateOrId)
 		     or error("Unknown state id: " .. tostring(stateOrId))
-	else
+	--else
 		-- TODO: verify stateOrId is in fact a State
 	end
 	return state

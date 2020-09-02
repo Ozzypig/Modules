@@ -85,7 +85,7 @@ end
 --- Give this maid a task, and returns its id.
 -- @treturn number the task id
 function Maid:addTask(task)
-	assert(task)
+	assert(task, "Task expected")
 	local taskId = #self.tasks + 1
 	self[taskId] = task
 	return taskId

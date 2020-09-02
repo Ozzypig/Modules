@@ -14,18 +14,31 @@ function TestRunner.functionNameIndicatesTest(name)
 	    or name:match(TestRunner.FUNCTION_NAME_PATTERN_POSTFIX)
 end
 
+--- Determines whether the given object is a ModuleScript containing tests
+function TestRunner.isTestModule(object)
+	return object:IsA("ModuleScript") and object.Name:match(TestRunner.MODULESCRIPT_NAME_PATTERN)
+end
+
+--- Recurses an object for test module scripts and calls foundTestModuleScript for each one found
+function TestRunner.recurseForTestModules(object, foundTestModuleScript)
+	if TestRunner.isTestModule(object) then
+		foundTestModuleScript(object)
+	end
+	for _, child in pairs(object:GetChildren()) do
+		TestRunner.recurseForTestModules(child, foundTestModuleScript)
+	end
+end
+
 --- Constructs a TestRunner using tests gathered from a root object,
 -- which is recursed for any ModuleScripts whose names end in the given
 -- pattern, "test"/"Test" or ".test"/".Test"
-function TestRunner.gather(object, moduleScriptNamePattern)
-	moduleScriptNamePattern = moduleScriptNamePattern or TestRunner.MODULESCRIPT_NAME_PATTERN
-
+function TestRunner.gather(object)
 	local tests = {}     --[name] = func
 	local testNames = {} --[func] = name
 	local numTests = 0
 
 	-- Add tests to the table
-	local function foundTestModuleScript(testModule)
+	TestRunner.recurseForTestModules(object, function (testModule)
 		local testsToAdd = require(testModule)
 		assert(type(testsToAdd) == "table", ("%s should return a table of test functions, returned %s: %s"):format(
 			testModule:GetFullName(), type(testsToAdd), tostring(testsToAdd)
@@ -40,22 +53,7 @@ function TestRunner.gather(object, moduleScriptNamePattern)
 			end
 		end
 		assert(testsInThisModule > 0, ("%s should contain at least one test function"):format(testModule:GetFullName()))
-	end
-
-	local function isTestModule(object)
-		return object:IsA("ModuleScript") and object.Name:match(moduleScriptNamePattern)
-	end
-
-	-- Recurses an object for tests
-	local function recurse(object)
-		if isTestModule(object) then
-			foundTestModuleScript(object)
-		end
-		for _, child in pairs(object:GetChildren()) do
-			recurse(child)
-		end
-	end
-	recurse(object)
+	end)
 
 	assert(numTests > 0, ("TestRunner.gather found no tests in %s"):format(object:GetFullName()))
 
@@ -74,10 +72,12 @@ function TestRunner.new(tests)
 		retvals = {};
 		printPrefix = nil;
 	}, TestRunner)
-	self.printFunc = function (...) return self:_print(...) end
+	self.printFunc = function (...)
+		return self:_print(...)
+	end
 
 	-- Gather all test names, then sort
-	for name, func in pairs(tests) do
+	for name, _func in pairs(tests) do
 		table.insert(self.testNames, name)
 	end
 	table.sort(self.testNames)
@@ -89,7 +89,7 @@ end
 function TestRunner:run()
 	assert(not self.ran, "Tests already run")
 	self.ran = true
-	for i, name in pairs(self.testNames) do
+	for _i, name in pairs(self.testNames) do
 		local func = self.tests[name]
 		self:_runTest(name, func)
 	end

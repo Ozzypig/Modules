@@ -8,9 +8,9 @@ local version = require(Modules:WaitForChild("version"))
 local versionTests = {}
 
 versionTests["test_version"] = function ()
-	assert(version.MAJOR >= 0)
-	assert(version.MINOR >= 0)
-	assert(version.PATCH >= 0)
+	assert(version.MAJOR >= 0, "version.MAJOR should be positive")
+	assert(version.MINOR >= 0, "version.MINOR should be positive")
+	assert(version.PATCH >= 0, "version.PATCH should be positive")
 end
 
 return versionTests

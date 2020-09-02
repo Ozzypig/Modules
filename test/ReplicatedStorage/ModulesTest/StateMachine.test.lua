@@ -4,7 +4,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Modules = ReplicatedStorage:WaitForChild("Modules")
 local StateMachine = require(Modules:WaitForChild("StateMachine"))
-local State = require(Modules.StateMachine:WaitForChild("State"))
 
 local StateMachineTests = {}
 
@@ -51,7 +50,7 @@ StateMachineTests["test_StateMachine:newSubmachine(state)"] = function ()
 
 	-- Sub-StateMachines
 	local subm1, subm1inactive, subm1active = sm:newSubmachine(state1)
-	local subm1state1 = subm1:newState("subm1state1")
+	--local subm1state1 = subm1:newState("subm1state1")
 	local subm2, subm2inactive, subm2active = sm:newSubmachine(state2)
 	local subm2state1 = subm1:newState("subm2state1")
 

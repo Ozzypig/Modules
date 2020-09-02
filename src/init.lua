@@ -165,7 +165,7 @@ function ModuleLoader:_safe_require(mod, requiring_mod)
 		else
 			error("Module " .. mod:GetFullName() .. " experienced an error while loading: " .. err, 3)
 		end
-	else
+	--else
 		-- We're good to go
 	end
 	if conn then

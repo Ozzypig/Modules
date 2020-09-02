@@ -2,7 +2,6 @@
 --@module class.test
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
 local Modules = ReplicatedStorage:WaitForChild("Modules")
 local class = require(Modules:WaitForChild("class"))
 
@@ -44,24 +43,20 @@ classTests["test_class.classOf"] = function ()
 	local myOtherClassObject = MyOtherClass.new()
 	local mySubclassObject = MySubclass.new()
 
-	assert(class.classOf(myClassObject)      == MyClass)
-	assert(class.classOf(myOtherClassObject) == MyOtherClass)
-	assert(class.classOf(mySubclassObject)   == MySubclass)
+	assert(class.classOf(myClassObject)      == MyClass, "class.classOf should identify class of basic object")
+	assert(class.classOf(myOtherClassObject) == MyOtherClass, "class.classOf should identify class of basic object")
+	assert(class.classOf(mySubclassObject)   == MySubclass, "class.classOf should respect subclass relationship")
 end
 
 classTests["test_class.getSuperclass"] = function ()
-	assert(class.getSuperclass(MySubclass) == MyClass)
-	assert(type(class.getSuperclass(MyClass)) == "nil")
-	assert(type(class.getSuperclass(MyOtherClass)) == "nil")
+	assert(class.getSuperclass(MySubclass) == MyClass, "class.getSuperclass should respect subclass relationship")
+	assert(type(class.getSuperclass(MyClass)) == "nil", "class.getSuperclass should return nil when there is no superclass")
+	assert(type(class.getSuperclass(MyOtherClass)) == "nil", "class.getSuperclass should return nil when there is no superclass")
 end
 
 classTests["test_class.extends"] = function ()
-	local myClassObject = MyClass.new()
-	local myOtherClassObject = MyOtherClass.new()
-	local mySubclassObject = MySubclass.new()
-
-	assert(    class.extends(MySubclass, MyClass))
-	assert(not class.extends(MyClass, MyOtherClass))
+	assert(    class.extends(MySubclass, MyClass), "class.extends should respect subclass relationship")
+	assert(not class.extends(MyClass, MyOtherClass), "class.extends should respect subclass relationship in correct direction")
 end
 
 classTests["test_class.instanceOf"] = function ()
@@ -69,11 +64,11 @@ classTests["test_class.instanceOf"] = function ()
 	local myOtherClassObject = MyOtherClass.new()
 	local mySubclassObject = MySubclass.new()
 
-	assert(    class.instanceOf(myClassObject, MyClass))
-	assert(    class.instanceOf(mySubclassObject, MyClass))
-	assert(not class.instanceOf(myOtherClassObject, MyClass))
-	assert(not class.instanceOf(myClassObject, MyOtherClass))
-	assert(not class.instanceOf(mySubclassObject, MyOtherClass))
+	assert(    class.instanceOf(myClassObject, MyClass), "class.instanceOf should identify class of basic object")
+	assert(    class.instanceOf(mySubclassObject, MyClass), "class.instanceOf should respect subclass relationship")
+	assert(not class.instanceOf(myOtherClassObject, MyClass), "class.instanceOf should return false if the object is not an instance of the class")
+	assert(not class.instanceOf(myClassObject, MyOtherClass), "class.instanceOf should return false if the object is not an instance of the class")
+	assert(not class.instanceOf(mySubclassObject, MyOtherClass), "class.instanceOf should return false if the object is not an instance of the class")
 end
 
 return classTests
