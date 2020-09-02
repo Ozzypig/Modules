@@ -62,7 +62,7 @@ _Modules_ uses the following process to locate the module:
 
 1. If no namespace was specified, assume the Modules ModuleScript is the namespace.
 2. Check for client module first: look for the namespace in ReplicatedStorage, if found, check it for the module.
-3. Check for server modules second: look for the namespace in ServerStorage, if found, check it for the moduke. If either the namespace or module is missing, raise a "module not found" error.
+3. Check for server modules second: look for the namespace in ServerScriptService, if found, check it for the module. If either the namespace or module is missing, raise a "module not found" error.
 
 If both the client and server require a shared library, but that shared library has a dependency only relevant to either the client or server, you can use `require.server` or `require.client` to skip the require and return nil if the code isn't running on that network peer:
 
