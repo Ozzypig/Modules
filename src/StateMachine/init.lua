@@ -111,7 +111,7 @@ function StateMachine.new()
 
 		--- A @{Maid} invoked upon @{StateMachine:cleanup|cleanup}
 		-- Cleans up @{StateMachine.onTransition|onTransition} and states constructed
-		-- through @{StateMachine.newState|newState}.
+		-- through @{StateMachine:newState|newState}.
 		-- @treturn Maid
 		maid = Maid.new();
 
