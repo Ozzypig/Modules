@@ -118,4 +118,4 @@ After moving the ReplicatedStorage namespace folder to the ServerScriptService f
 
 ## 6. Check out the Goodies
 
-Modules comes with a few really useful classes you should never leave home without. See [Overview#Structure](index.md#structure) for a list, or check out a few of these: [Event](api/Event.md), [Maid](api/Maid.md), [StateMachine](api/StateMachine).
+Modules comes with a few really useful classes you should never leave home without. See [Overview#Structure](index.md#structure) for a list, or check out a few of these: [Event](api/Event.md), [Maid](api/Maid.md), [StateMachine](api/StateMachine.md).
