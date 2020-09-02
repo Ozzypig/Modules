@@ -5,7 +5,7 @@ local VERSION = {
 	SOFTWARE_NAME = "Modules";
 	MAJOR = 1;
 	MINOR = 1;
-	PATCH = 0;
+	PATCH = 1;
 	PRERELEASE = {};
 	BUILD_METADATA = script:FindFirstChild("build-meta")
 	             and require(script["build-meta"]) or {};
