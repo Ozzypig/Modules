@@ -213,7 +213,7 @@ function ModuleLoader:_require(object, requiring_script)
 		"%s -> %s%s",
 		tostring(requiring_script),
 		tostring(object),
-		(self._cache[object] ~= nil and " (cached)" or "")
+		self._cache[object] ~= nil and " (cached)" or ""
 	))
 
 	if self._cache[object] then
@@ -240,8 +240,7 @@ function ModuleLoader:_require(object, requiring_script)
 		error("Unknown type passed to require: " .. object_type, 2)
 	end
 
-	assert(retval, "No retval from require")
-	self._cache[object] = retval
+	self._cache[object] = assert(retval, "No retval from require")
 	return retval
 end
 

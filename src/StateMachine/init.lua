@@ -193,7 +193,7 @@ function StateMachine:_stateArg(stateOrId)
 	if type(stateOrId) == "string" then
 		state = self:hasState(stateOrId)
 		    and self:getState(stateOrId)
-		     or error("Unknown state id: " .. tostring(stateOrId))
+		    or error("Unknown state id: " .. tostring(stateOrId))
 	--else
 		-- TODO: verify stateOrId is in fact a State
 	end
