@@ -1,5 +1,5 @@
 --- The main ModuleLoader, designed to replace the built-in require function.
--- ModuleLoader is the main object returned by the "Modules" ModuleScript. It is designed to 
+-- ModuleLoader is the main object returned by the "Modules" ModuleScript. It is designed to
 -- replace the built-in `require` function, retaining all its normal behaviors while also adding
 -- more:
 --
@@ -26,7 +26,7 @@ ModuleLoader.DEBUG_MODE = (function ()
 	return script:FindFirstChild("DebugEnablede")
 	   or (script:FindFirstChild("Debug")
 	   and script.Debug:IsA("BoolValue")
-       and script.Debug.Value)
+	   and script.Debug.Value)
 end)()
 
 --- Starting with `parent`, call FindFirstChild using each name in the `names` array
@@ -36,9 +36,12 @@ local function getObject(parent, names)
 	assert(typeof(parent) == "Instance")
 	assert(type(names) == "table")
 	local object = parent
-	for i = 1, #names do 
-		if not object then return end
-		object = object:FindFirstChild(names[i])
+	for _, name in ipairs(names) do
+		if not object then
+			return
+		end
+
+		object = object:FindFirstChild(name)
 	end
 	return object
 end
@@ -48,10 +51,10 @@ local function split(str, sep)
 	local strs = {}
 	local s, e
 	while true do
-		s, e = str:find(sep)
+		s, e = string.find(str, sep)
 		if s then
-			table.insert(strs, str:sub(1, s - 1))
-			str = str:sub(e + 1)
+			table.insert(strs, string.sub(str, 1, s - 1))
+			str = string.sub(str, e + 1)
 		else
 			break
 		end
@@ -65,12 +68,13 @@ local function splitNames(str)
 	local t = split(str, ModuleLoader.NAME_SPLIT_PATTERN)
 	local i = 1
 	while i <= #t do
-		if t[i]:sub(t[i]:len()) == "%" then
+		local value = t[i]
+		if string.sub(value, #value) == "%" then
 			-- Trim the trailing %
-			t[i] = t[i]:sub(1, t[i]:len() - 1)
+			t[i] = string.sub(value, 1, #value - 1)
 			-- Concatenate with the next string (if there is one)
 			if i < #t then
-				t[i] = t[i] .. "." .. table.remove(t, i + 1)
+				t[i] ..= "." .. table.remove(t, i + 1)
 			end
 		else
 			-- Move to the next
@@ -84,25 +88,25 @@ end
 -- @function ModuleLoader:_print
 -- @local
 function ModuleLoader:_print(...)
-	if ModuleLoader.DEBUG_MODE then
+	if self.DEBUG_MODE then
 		print(...)
 	end
 end
 
 --- Finds a module given its fully-qualified name
 -- @private
-function ModuleLoader:_findModule(fqName)
+function ModuleLoader:_findModule(fqName: string)
 	assert(type(fqName) == "string")
-	
+
 	-- Determine the namespace and module name - the default namespace is "Modules"
 	local namespace = "Modules"
 	local moduleName = fqName
 
 	-- A colon indicates that a namespace is specified - split it if so
-	local s,e = fqName:find("[^%%]:")
+	local s, e = string.find(fqName, "[^%%]:")
 	if s then
-		namespace = fqName:sub(1, s)
-		moduleName = fqName:sub(e + 1)
+		namespace = string.sub(fqName, 1, s)
+		moduleName = string.sub(fqName, e + 1)
 	end
 
 	local namespaceNames = splitNames(namespace)
@@ -110,32 +114,37 @@ function ModuleLoader:_findModule(fqName)
 
 	-- Try to find what we're looking for on the client
 	local namespaceClient = namespace == script.Name and script
-	                     or getObject(ReplicatedStorage, namespaceNames)
+						or getObject(ReplicatedStorage, namespaceNames)
 	local moduleClient = getObject(namespaceClient, moduleNames)
-	
+
 	if not isServer then
 		if not namespaceClient then
-			error(("Could not find client namespace: %s"):format(namespace), 3)
+			error(string.format("Could not find client namespace: %s", namespace), 3)
 		end
+
 		if not moduleClient then
-			error(("Could not find client module: %s"):format(fqName), 3)
+			error(string.format("Could not find client module: %s", fqName), 3)
 		end
+
 		return moduleClient
 	elseif moduleClient then
 		return moduleClient
 	end
-	
+
 	-- Try to find what we're looking for on the server
 	local moduleServer
 	local namespaceServer = namespace == script.Name and script
-	                     or getObject(ServerScriptService, namespaceNames)
+						or getObject(ServerScriptService, namespaceNames)
+
 	if not namespaceServer then
-		error(("Could not find namespace: %s"):format(namespace), 3)
+		error(string.format("Could not find namespace: %s", namespace), 3)
 	end
+
 	moduleServer = getObject(namespaceServer, moduleNames)
 	if not moduleServer then
-		error(("Could not find module: %s"):format(fqName), 3)
+		error(string.format("Could not find module: %s", fqName), 3)
 	end
+
 	return moduleServer
 end
 
@@ -146,41 +155,48 @@ ModuleLoader.SAFE_REQUIRE_WARN_TIMEOUT = .5
 function ModuleLoader:_safe_require(mod, requiring_mod)
 	local startTime = os.clock()
 	local conn
-	conn = RunService.Stepped:connect(function ()
-		if os.clock() >= startTime + ModuleLoader.SAFE_REQUIRE_WARN_TIMEOUT then
-			warn(("%s -> %s is taking too long"):format(tostring(requiring_mod), tostring(mod)))
+	conn = RunService.Stepped:Connect(function ()
+		if os.clock() >= startTime + self.SAFE_REQUIRE_WARN_TIMEOUT then
+			warn(string.format("%s -> %s is taking too long", tostring(requiring_mod), tostring(mod)))
 			if conn then
-				conn:disconnect()
+				conn:Disconnect()
 				conn = nil
 			end
-		end 
+		end
 	end)
+
 	local retval
 	local success, err = pcall(function ()
 		retval = require(mod)
 	end)
+
 	if not success then
-		if type(retval) == "nil" and err:find("exactly one value") then
+		if type(retval) == "nil" and string.find(err, "exactly one value") then
 			error("Module did not return exactly one value: " .. mod:GetFullName(), 3)
 		else
 			error("Module " .. mod:GetFullName() .. " experienced an error while loading: " .. err, 3)
 		end
-	--else
-		-- We're good to go
 	end
+
 	if conn then
-		conn:disconnect()
+		conn:Disconnect()
 		conn = nil
 	end
+
 	return retval
 end
 
 --- When called by a function that replaces `require`, this function returns the LuaSourceContainer
 -- which called `require`.
 --@private
-function ModuleLoader:_getRequiringScript()
-	return getfenv(3).script
+function ModuleLoader._getRequiringScript(_)
+	local array = string.split(debug.traceback(), ".")
+	return string.match(array[#array], "^(.+):")
 end
+
+-- function ModuleLoader._getRequiringScript1()
+-- 	return getfenv(3).script
+-- end
 
 --- Basic memoization pattern
 -- @private
@@ -190,18 +206,20 @@ ModuleLoader._cache = {}
 -- @private
 function ModuleLoader:_require(object, requiring_script)
 	if not requiring_script then
-		requiring_script = ModuleLoader:_getRequiringScript()
+		requiring_script = self:_getRequiringScript()
 	end
-	self:_print(("%s -> %s%s"):format(
+
+	self:_print(string.format(
+		"%s -> %s%s",
 		tostring(requiring_script),
 		tostring(object),
-		(ModuleLoader._cache[object] ~= nil and " (cached)" or "")
+		(self._cache[object] ~= nil and " (cached)" or "")
 	))
-	
-	if ModuleLoader._cache[object] then
-		return ModuleLoader._cache[object]
+
+	if self._cache[object] then
+		return self._cache[object]
 	end
-	
+
 	local object_type = typeof(object)
 	local retval
 	if object_type == "number" then
@@ -209,36 +227,35 @@ function ModuleLoader:_require(object, requiring_script)
 		retval = require(object)
 	elseif object_type == "Instance" then
 		if object:IsA("ModuleScript") then
-			retval = ModuleLoader:_safe_require(object, requiring_script)
+			retval = self:_safe_require(object, requiring_script)
 		else
 			error("Non-ModuleScript passed to require: " .. object:GetFullName(), 2)
 		end
 	elseif object_type == "string" then
-		local moduleScript = self:_findModule(object)
-		assert(moduleScript, ("Could not find module: %s"):format(tostring(object)))
-		retval = ModuleLoader:_safe_require(moduleScript, requiring_script)
+		local moduleScript = assert(self:_findModule(object), string.format("Could not find module: %s", tostring(object)))
+		retval = self:_safe_require(moduleScript, requiring_script)
 	elseif object_type == "nil" then
 		error("require expects ModuleScript, asset id or string", 2)
 	else
 		error("Unknown type passed to require: " .. object_type, 2)
 	end
-	
+
 	assert(retval, "No retval from require")
-	ModuleLoader._cache[object] = retval
+	self._cache[object] = retval
 	return retval
 end
 
 --- The main `require` overload.
 -- @param object An object normally passed to require OR a string
 function ModuleLoader.require(object)
-	local script = ModuleLoader:_getRequiringScript()
-	return ModuleLoader:_require(object, script)
+	local requiringScript = ModuleLoader:_getRequiringScript()
+	return ModuleLoader:_require(object, requiringScript)
 end
 
 --- Alias for calling @{ModuleLoader.require}, useful when using ModuleLoader as a `require` replacement.
 function ModuleLoader:__call(object)
-	local script = self:_getRequiringScript()
-	return self:_require(object, script)
+	local requiringScript = self:_getRequiringScript()
+	return self:_require(object, requiringScript)
 end
 
 --- Like @{ModuleLoader.require|require}, but returns nil if not ran on the server.
@@ -267,18 +284,19 @@ end
 function ModuleLoader._replicateLibraries()
 	-- Search for modules with "-Replicated" at the end and replicate them
 	-- Alternatively, child folder named "Replicated" is moved and renamed
-	for _, child in pairs(ServerScriptService:GetChildren()) do
+	for _, child in ipairs(ServerScriptService:GetChildren()) do
 		if child:IsA("Folder") then
-			if child.Name:find("%-Replicated$") then
-				child.Name = child.Name:sub(1, child.Name:len() - 11)
+			if string.find(child.Name, "%-Replicated$") then
+				child.Name = string.sub(child.Name, 1, #child.Name - 11)
 				child.Parent = ReplicatedStorage
 			elseif child:FindFirstChild("Replicated") then
 				local rep = child.Replicated
 				rep.Name = child.Name
-				rep.Parent = ReplicatedStorage 
+				rep.Parent = ReplicatedStorage
 			end
 		end
 	end
+
 	ModuleLoader._signalAllLibrariesReplicated()
 end
 
@@ -300,12 +318,17 @@ end
 --- Returns the version of the ModuleLoader being used
 -- @function ModuleLoader:__tostring
 function ModuleLoader:__tostring()
-	return ("<ModuleLoader %s>"):format(self.VERSION)
+	return string.format("<ModuleLoader %s>", self.VERSION)
 end
 
 -- Server should replicate
-if isServer then ModuleLoader._replicateLibraries() end
+if isServer then
+	ModuleLoader._replicateLibraries()
+end
+
 -- Client should wait for modules to replicate
-if isClient then ModuleLoader._waitForLibrariesToReplicate() end
+if isClient then
+	ModuleLoader._waitForLibrariesToReplicate()
+end
 
 return ModuleLoader

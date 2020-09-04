@@ -37,7 +37,7 @@ CounterState.__index = CounterState
 
 function CounterState.new(...)
 	local self = setmetatable(State.new(...), CounterState)
-	
+
 	-- Tracks number of times it has been transitioned to
 	self.transitionCount = 0
 
@@ -70,8 +70,8 @@ print("Transitions: " .. firstState.transitionCount) --> Transitions: 2
 ]]
 -- @classmod State
 
-local Maid = require(script.Parent.Parent:WaitForChild("Maid"))
-local Event = require(script.Parent.Parent:WaitForChild("Event"))
+local Maid = require(script.Parent.Parent.Maid)
+local Event = require(script.Parent.Parent.Event)
 
 local State = {}
 State.__index = State
@@ -84,7 +84,10 @@ State.__index = State
 -- @tparam[opt] function onEnterCallback A `function` to immediately connect to @{State.onEnter|onEnter}
 -- @constructor
 function State.new(machine, id, onEnterCallback)
-	if type(id) ~= "string" then error("State.new expects string id", 3) end
+	if type(id) ~= "string" then
+		error("State.new expects string id", 3)
+	end
+
 	local self = setmetatable({
 		--- The parent @{StateMachine} which owns this state and can @{StateMachine:transition|transition} to it.
 		-- @treturn StateMachine
@@ -97,12 +100,12 @@ function State.new(machine, id, onEnterCallback)
 		--- A @{Maid} invoked upon @{StateMachine:cleanup|cleanup}
 		-- @treturn Maid
 		maid = Maid.new();
-		
+
 		--- Fires when the parent @{State.machine|machine} @{StateMachine:transition|transitions} into this state.
 		-- @event onEnter
 		-- @tparam State prevState The @{State} which the parent {@State.machine|machine} had left (if any)
 		onEnter = Event.new();
-		
+
 		--- Fires when parent @{State.machine|machine} @{StateMachine:transition|transitions} out of this state.
 		-- @event onLeave
 		-- @tparam State nextState The @{State} which the parent {@State.machine|machine} will enter (if any)
@@ -120,21 +123,21 @@ function State.new(machine, id, onEnterCallback)
 	}, State)
 	self.maid:addTask(self.onEnter)
 	self.maid:addTask(self.onLeave)
-	
+
 	if type(onEnterCallback) == "function" then
 		self.maid:addTask(self.onEnter:connect(onEnterCallback))
-	elseif type(onEnterCallback) == "nil" then
+	elseif onEnterCallback == nil then
 		-- that's ok
 	else
 		error("State.new() was given non-function onEnterCallback (" .. type(onEnterCallback) .. ", " .. tostring(onEnterCallback) .. ")")
-	end	
-	
+	end
+
 	return self
 end
 
 --- Returns a string with this state's @{State.id|id}.
 function State:__tostring()
-	return ("<State %q>"):format(self.id)
+	return string.format("<State %q>", self.id)
 end
 
 --- Clean up resources used by this state.
