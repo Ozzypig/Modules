@@ -69,12 +69,12 @@ end
 -- @tparam function handler Function handler called with arguments passed when `:Fire(...)` is called
 -- @treturn rbx:datatype/RBXScriptConnection Connection object that can be disconnected
 function Event:connect(handler)
-	if not (type(handler) == "function") then
-		error(("connect(%s)"):format(typeof(handler)), 2)
+	if type(handler) ~= "function" then
+		error(string.format("connect(%s)", typeof(handler)), 2)
 	end
 
 	return self._bindableEvent.Event:Connect(function()
-		handler(unpack(self._argData, 1, self._argCount))
+		handler(table.unpack(self._argData, 1, self._argCount))
 	end)
 end
 
@@ -82,8 +82,8 @@ end
 -- @treturn ... Variable arguments from connection
 function Event:wait()
 	self._bindableEvent.Event:Wait()
-	assert(self._argData, "Missing arg data, likely due to :TweenSize/Position corrupting threadrefs.")
-	return unpack(self._argData, 1, self._argCount)
+	local argData = assert(self._argData, "Missing arg data, likely due to :TweenSize/Position corrupting threadrefs.")
+	return table.unpack(argData, 1, self._argCount)
 end
 
 --- Fire the event with the given arguments. All handlers will be invoked. Handlers follow

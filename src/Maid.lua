@@ -59,11 +59,14 @@ end
 
 function Maid:__newindex(index, newTask)
 	if type(Maid[index]) ~= "nil" then
-		error(("\"%s\" is reserved"):format(tostring(index)), 2)
-	end 
+		error(string.format("%q is reserved", tostring(index)), 2)
+	end
+
 	local oldTask = self.tasks[index]
 	self.tasks[index] = newTask
-	if oldTask then self:performTask(oldTask) end
+	if oldTask then
+		self:performTask(oldTask)
+	end
 end
 
 --- Executes the given task
@@ -74,11 +77,11 @@ function Maid:performTask(task)
 	elseif ty == "Instance" then
 		task:Destroy()
 	elseif ty == "RBXScriptConnection" then
-		task:disconnect()
+		task:Disconnect()
 	elseif task.cleanup then
 		task:cleanup()
 	else
-		error(("unknown task type \"%s\""):format(ty))
+		error(string.format("unknown task type %q", ty))
 	end
 end
 
@@ -95,15 +98,15 @@ Maid.giveTask = Maid.addTask
 --- Cause the maid to do all of its tasks then forget about them
 function Maid:cleanup()
 	local tasks = self.tasks
-	
+
 	-- Disconnect first
 	for index, task in pairs(tasks) do
 		if typeof(task) == "RBXScriptConnection" then
 			tasks[index] = nil
-			task:disconnect()
+			task:Disconnect()
 		end
 	end
-	
+
 	-- Clear tasks table (don't use generic for here)
 	local index, task = next(tasks)
 	while type(task) ~= "nil" do

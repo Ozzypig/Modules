@@ -36,7 +36,7 @@ MyMachine.__index = MyMachine
 function MyMachine.new()
 	local self = setmetatable(StateMachine.new(), MyMachine)
 
-	-- States 
+	-- States
 	self.defaultState = self:newState("default")
 	self.spamState = self:newState("spam")
 	self.eggsState = self:newState("eggs")
@@ -79,10 +79,10 @@ the submachine enters the "Active" state. Upon leaving, it enters the "Inactive"
 ]]
 --@classmod StateMachine
 
-local Maid = require(script.Parent:WaitForChild("Maid"))
-local Event = require(script.Parent:WaitForChild("Event"))
+local Maid = require(script.Parent.Maid)
+local Event = require(script.Parent.Event)
 
-local State = require(script:WaitForChild("State"))
+local State = require(script.State)
 
 local StateMachine = {}
 StateMachine.__index = StateMachine
@@ -131,7 +131,7 @@ end
 
 --- Returns a string with the current @{State} this machine is in (if any), calling @{State:__tostring}.
 function StateMachine:__tostring()
-	return ("<StateMachine (%s)>"):format(self.state and tostring(self.state) or "<nil>")
+	return string.format("<StateMachine (%s)>", self.state and tostring(self.state) or "<nil>")
 end
 
 --- Wraps the default `print` function; does nothing if @{StateMachine.debugMode|debugMode} is false.
@@ -172,8 +172,8 @@ function StateMachine:newState(...)
 end
 
 --- Determines whether this machine has a @{State|state} with the given id.
--- @tparam string id The id of the state to check. 
--- @treturn boolean Whether the machine has a @{State|state} with the given id. 
+-- @tparam string id The id of the state to check.
+-- @treturn boolean Whether the machine has a @{State|state} with the given id.
 function StateMachine:hasState(id)
 	return self.states[id] ~= nil
 end
@@ -193,7 +193,7 @@ function StateMachine:_stateArg(stateOrId)
 	if type(stateOrId) == "string" then
 		state = self:hasState(stateOrId)
 		    and self:getState(stateOrId)
-		     or error("Unknown state id: " .. tostring(stateOrId))
+		    or error("Unknown state id: " .. tostring(stateOrId))
 	--else
 		-- TODO: verify stateOrId is in fact a State
 	end
@@ -204,7 +204,7 @@ end
 -- @tparam ?State|string state The state or id of the state to check
 -- @treturn boolean
 function StateMachine:isInState(state)
-	assert(type(state) ~= "nil", "Must provide non-nil state")
+	assert(state ~= nil, "Must provide non-nil state")
 	return self.state == self:_stateArg(state)
 end
 
@@ -215,17 +215,28 @@ end
 -- @{StateMachine.onTransition|machine onTransition}, then finally @{State.onEnter|new state onEnter}.
 -- @tparam ?State|string stateNew The state to which the machine should transition, or its `id`.
 function StateMachine:transition(stateNew)
-	if type(stateNew) == "string" then stateNew = self:hasState(stateNew) and self:getState(stateNew) or error("Unknown state id: " .. tostring(stateNew), 2) end
-	if type(stateNew) == "nil" then error("StateMachine:transition() requires state", 2) end
+	if type(stateNew) == "string" then
+		stateNew = self:hasState(stateNew) and self:getState(stateNew) or error("Unknown state id: " .. tostring(stateNew), 2)
+	end
+
+	if type(stateNew) == "nil" then
+		error("StateMachine:transition() requires state", 2)
+	end
+
 	--if getmetatable(stateNew) ~= State then error("StateMachine:transition() expects state", 2) end
-	 
+
 	local stateOld = self.state
-	self:print(("%s -> %s"):format(stateOld and stateOld.id or "(none)", stateNew and stateNew.id or "(none)"))
-	
+	self:print(string.format("%s -> %s", stateOld and stateOld.id or "(none)", stateNew and stateNew.id or "(none)"))
+
 	self.state = stateNew
-	if stateOld then stateOld:leave(stateNew) end
+	if stateOld then
+		stateOld:leave(stateNew)
+	end
+
 	self.onTransition:fire(stateOld, stateNew)
-	if stateNew then stateNew:enter(stateOld) end
+	if stateNew then
+		stateNew:enter(stateOld)
+	end
 end
 
 --[[-- Create a StateMachine of type @{StateMachine.SubStateMachineClass|SubStateMachineClass}, given a @{State|state}.

@@ -11,7 +11,7 @@ end
 --- Given an `object` and a `class`, return if that object is an instance of another class/superclass
 -- Equivalent to @{class.extends}(@{class.classOf}(object), `cls`)
 function class.instanceOf(object, cls)
-	return class.extends(class.classOf(object), cls)
+	return class.extends(getmetatable(object), cls)
 end
 
 --- Get the superclass of a class
@@ -26,7 +26,10 @@ function class.extends(subclass, superclass)
 	assert(type(superclass) == "table")
 	local c = subclass
 	repeat
-		if c == superclass then return true end
+		if c == superclass then
+			return true
+		end
+
 		c = class.getSuperclass(c)
 	until not c
 	return false
